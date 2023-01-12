@@ -45,10 +45,23 @@ def transmit_data():
             print("Escrito.")
 
 def receive_data():
-    ...
+    if uart0_filestream != -1:
+        rx_buffer = os.read(uart0_filestream, 255)
+        rx_length = len(rx_buffer)
+        if rx_length < 0:
+            print("Erro na leitura.")
+        elif rx_length == 0:
+            print("Nenhum dado disponível.")
+        else:
+            print(f'tamanho do array que chega é {len(rx_buffer)}')
+            sub_bytes = rx_buffer[3:7]
+            print(len(sub_bytes))
+            buffer = struct.unpack(">i", sub_bytes)
+            print(f'A mensagem lida foi {buffer}')    
 
 def read_commands():
     transmit_data()
+    time.sleep(1)
     receive_data()
 
 def config_uart():
