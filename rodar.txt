@@ -1,0 +1,9 @@
+PLACA 1 - RASP 42
+
+ssh dafnemoreira@164.41.98.16 -p 13508
+scp -P 13508 -r /home/dafnem/Documentos/embarcados/FSET2 dafnemoreira@164.41.98.16:/home/dafnemoreira
+
+PLACA 2 - RASP 44
+
+ssh dafnemoreira@164.41.98.26 -p 13508
+scp -P 13508 -r /home/dafnem/Documentos/embarcados/FSET2 dafnemoreira@164.41.98.26:/home/dafnemoreira
