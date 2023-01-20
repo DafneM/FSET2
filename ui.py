@@ -1,7 +1,13 @@
 def user_interface():
-    reference_temp = float(input("Defina a temperatura de referência desejada: "))
+
+
+    choice = float(input("O que vocẽ deseja alterar/\n1-Temperatura de referencia\n2-Constantes PID\n"))
+
+    if(choice == 1):
+        reference_temp = float(input("Defina a temperatura de referência desejada: "))
     
-    print("Defina os parâmetros desejados:")
-    Kp = float(input("Kp: "))
-    Ki = float(input("Ki: "))
-    Kd = float(input("Kd: "))
+    elif(choice == 2):
+        print("Defina os parâmetros desejados:")
+        Kp = float(input("Kp: "))
+        Ki = float(input("Ki: "))
+        Kd = float(input("Kd: "))

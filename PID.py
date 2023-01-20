@@ -1,4 +1,3 @@
-saida_medida = 0.0
 sinal_de_controle = 0.0
 referencia = 0.0
 Kp = 0.0
@@ -12,21 +11,25 @@ sinal_de_controle_MAX = 100.0
 sinal_de_controle_MIN = -100.0
 
 def pid_configura_constantes(Kp_, Ki_, Kd_):
+    global Kp, Ki, Kd
+
     Kp = Kp_
     Ki = Ki_
     Kd = Kd_
 
 def pid_atualiza_referencia(referencia_):
+    global referencia
+
     referencia = referencia_
 
 def pid_controle(saida_medida):
     global sinal_de_controle
-    global referencia
     global Kp, Ki, Kd, T
     global last_time
     global erro_total, erro_anterior
     global sinal_de_controle_MAX, sinal_de_controle_MIN
 
+    print(saida_medida)
     erro = referencia - saida_medida
     erro_total += erro
 

@@ -27,15 +27,32 @@ def transmit_data(code, subcode):
     #matricula
     matricula = bytes([int('6', 16), int('2', 16), int('4', 16), int('3', 16)])
 
-    if (code_hexa_str == '0x16' and subcode_hexa_str == '0xD3'):
+    if (code_hexa_str == '0x16' and subcode_hexa_str == '0xD3'): #envia estado do sistema
         status_matricula = bytes([int('6', 16), int('2', 16), int('4', 16), int('3', 16), int(str(states['system_state']), 16)])
         data = bytes(subcode + status_matricula)
-    elif (code_hexa_str == '0x16' and subcode_hexa_str == '0xD5'):
-        print('entrei')
+    elif (code_hexa_str == '0x16' and subcode_hexa_str == '0xD4'): #envia estado do sistema (manual ou curva)
+        status_matricula = bytes([int('6', 16), int('2', 16), int('4', 16), int('3', 16), int(str(states['curva_mode']), 16)])
+        data = bytes(subcode + status_matricula)
+    elif (code_hexa_str == '0x16' and subcode_hexa_str == '0xD5'): #envia estado do aquecimento
         status_matricula = bytes([int('6', 16), int('2', 16), int('4', 16), int('3', 16), int(str(states['heating_state']), 16)])
         data = bytes(subcode + status_matricula)
+    elif (code_hexa_str == '0x16' and subcode_hexa_str == '0xD6'): #envia temperatura externa
+        float_external_temp = struct.pack('f', states['external_temp'])
+        status_matricula = bytes([int('6', 16), int('2', 16), int('4', 16), int('3', 16)])
+        data = bytes(subcode + status_matricula + float_external_temp)
+    elif (code_hexa_str == '0x16' and subcode_hexa_str == '0xD1'): #envia sinal de controle
+        bytes_representation = struct.pack('i', int(states['control_signal']))
+        data_control_signal = bytes([int('6', 16), int('2', 16), int('4', 16), int('3', 16)])
+        data = bytes(subcode + data_control_signal + bytes_representation)
+    elif (code_hexa_str == '0x16' and subcode_hexa_str == '0xD2'): #envia sinal de referencia
+        float_reference_temp = struct.pack('f', states['reference_temp'])
+        data_control_signal = bytes([int('6', 16), int('2', 16), int('4', 16), int('3', 16)])
+        data = bytes(subcode + data_control_signal + float_reference_temp)
+    
     else:
         data = bytes(subcode + matricula)
+
+    print(f'Transmiti: {subcode_hexa_str}')
 
     #crc
     crc = struct.pack('H', calcula_crc(destination_address + function_code + data))
@@ -57,29 +74,50 @@ def receive_data():
         rx_length = len(rx_buffer)
         if rx_length < 0:
             print("Erro na leitura.")
+            return -1
         elif rx_length == 0:
             print("Nenhum dado disponível.")
+            return -1
         else:
             buffer_nine = rx_buffer[:9]
-            bytes_separados = struct.unpack("9B", buffer_nine)
-            sub_bytes = bytes(rx_buffer[3:7])
-
-            received_code = str(hex(bytes_separados[1]))
-            received_subcode = str(hex(bytes_separados[2]))
             
-            if(received_code == '0x23'):
-                if(received_subcode == '0xc1' or received_subcode == '0xc2'):
-                    command = struct.unpack("f", sub_bytes)[0]
-                    print(sub_bytes)
-                elif(received_subcode == '0xc3'):
-                    command = hex(int.from_bytes(sub_bytes, 'little'))
-            elif(received_code == '0x16'):
-                if(received_subcode == '0xd3' or received_subcode == '0xd4' or received_subcode == '0xd5'):
-                    command = hex(int.from_bytes(sub_bytes, 'little'))
-                elif(received_subcode == '0xd6'):
-                    command = hex(int(struct.unpack("f", sub_bytes)[0]))
+            if(len(buffer_nine) == 9):
+                bytes_separados = struct.unpack("9B", buffer_nine)
+                sub_bytes = bytes(rx_buffer[3:7])
 
-            return command
+                received_code = str(hex(bytes_separados[1]))
+                received_subcode = str(hex(bytes_separados[2]))
+
+                print(f'received subcode {received_subcode}')
+                print(f'sub byes {sub_bytes}')
+
+                calculated_crc = struct.pack('H', calcula_crc(bytes(rx_buffer[:7])))
+                crc = bytes(buffer_nine[7:10])
+
+                print(calculated_crc)
+                print(crc)
+
+                if(calculated_crc == crc):
+                    print(sub_bytes)
+                    if(received_code == '0x23'):
+                        if(received_subcode == '0xc1' or received_subcode == '0xc2'):
+                            print(f'sub bytes {sub_bytes}')
+                            command = struct.unpack("f", sub_bytes)[0]
+                            print(f'cheguei no command {command}')
+                            return command
+                        elif(received_subcode == '0xc3'):
+                            command = hex(int.from_bytes(sub_bytes, 'little'))
+                            return command
+                    elif(received_code == '0x16'):
+                        if(received_subcode == '0xd3' or received_subcode == '0xd4' or received_subcode == '0xd5'):
+                            command = hex(int.from_bytes(sub_bytes, 'little'))
+                            return command
+                        elif(received_subcode == '0xd6'):
+                            command = hex(int(struct.unpack("f", sub_bytes)[0]))
+                            return command
+                
+                else:
+                    return -1
 
 def read_commands():
     transmit_data('0x23', '0xC3')

@@ -62,5 +62,10 @@ CONTROLE DE TEMPERATURA:
 
 o controle de temperatura esta dentro do loop    
 
+no arquivo de curva reflow, a temperatura é a temperatura de referencia
 
-
+with open('data.csv', 'r') as file:
+    csv_reader = csv.reader(file)
+    first_line = next(csv_reader)
+    first_element = first_line[0]
+    print(first_element)
