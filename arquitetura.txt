@@ -69,3 +69,6 @@ with open('data.csv', 'r') as file:
     first_line = next(csv_reader)
     first_element = first_line[0]
     print(first_element)
+
+PORTA bme
+PLACA 2 - porta 1

@@ -52,8 +52,6 @@ def transmit_data(code, subcode):
     else:
         data = bytes(subcode + matricula)
 
-    print(f'Transmiti: {subcode_hexa_str}')
-
     #crc
     crc = struct.pack('H', calcula_crc(destination_address + function_code + data))
 
@@ -88,22 +86,13 @@ def receive_data():
                 received_code = str(hex(bytes_separados[1]))
                 received_subcode = str(hex(bytes_separados[2]))
 
-                print(f'received subcode {received_subcode}')
-                print(f'sub byes {sub_bytes}')
-
                 calculated_crc = struct.pack('H', calcula_crc(bytes(rx_buffer[:7])))
                 crc = bytes(buffer_nine[7:10])
 
-                print(calculated_crc)
-                print(crc)
-
                 if(calculated_crc == crc):
-                    print(sub_bytes)
                     if(received_code == '0x23'):
                         if(received_subcode == '0xc1' or received_subcode == '0xc2'):
-                            print(f'sub bytes {sub_bytes}')
                             command = struct.unpack("f", sub_bytes)[0]
-                            print(f'cheguei no command {command}')
                             return command
                         elif(received_subcode == '0xc3'):
                             command = hex(int.from_bytes(sub_bytes, 'little'))

@@ -1,9 +1,21 @@
 # O init gpio tem que fazer o setup e passar o pino (nesse trabalho tem 2 saidas)
-import wiringpi as wiringpi
+import wiringpi2 as wiringpi
+import RPi.GPIO as GPIO
 from config import *
+import time
 
 resistor_pin = 0
 ventoinha_pin = 0
+
+GPIO.setmode(GPIO.BCM)
+GPIO.setmode(GPIO.BCM)
+
+GPIO.setup(23, GPIO.OUT)
+GPIO.setup(24, GPIO.OUT)
+
+pwm1 = GPIO.PWM(23, 1000)
+
+pwm2 = GPIO.PWM(24, 1000)
 
 def convert_gpio_to_wiring(gpio):
     if gpio == 2:
@@ -95,7 +107,7 @@ def convert_gpio_to_wiring(gpio):
 
 def init_gpio():
     wiringpi.wiringPiSetupGpio() 
-    global resistor_pin, ventoinha_pin
+    global resistor_pin, ventoinha_pin, pwm
 
     resistor_pin = convert_gpio_to_wiring(configs['resistor_gpio'])
     ventoinha_pin = convert_gpio_to_wiring(configs['ventoinha_gpio'])
@@ -103,32 +115,50 @@ def init_gpio():
     wiringpi.pinMode(resistor_pin, wiringpi.PWM_OUTPUT)
     wiringpi.pinMode(ventoinha_pin, wiringpi.PWM_OUTPUT)
 
-def activate_resistor(sinal_controle):
-    global resistor_pin, ventoinha_pin
-    # create a software PWM on pin 1 with a range of 100
-    wiringpi.softPwmCreate(resistor_pin, 0, 100)
+    wiringpi.softPwmCreate(resistor_pin, 0, 1000)
+    wiringpi.softPwmCreate(ventoinha_pin, 0, 1000)
 
-    # set the duty cycle to 50%
-    wiringpi.softPwmWrite(resistor_pin, int(abs(sinal_controle)))
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setmode(GPIO.BCM)
 
-def activate_ventoinha(sinal_controle):
-    global resistor_pin, ventoinha_pin
-    # create a software PWM on pin 1 with a range of 100
-    wiringpi.softPwmCreate(resistor_pin, 0, 100)
+    # GPIO.setup(23, GPIO.OUT)
+    # GPIO.setup(24, GPIO.OUT)
 
-    # set the duty cycle to 50%
-    if(sinal_controle < 0 and sinal_controle > -40): #se o sinal de controle estiver entre 0 e -40, joga pra 40%
-        wiringpi.softPwmWrite(resistor_pin, 40)
-    else:
-        wiringpi.softPwmWrite(resistor_pin, int(abs(sinal_controle)))
+    # pwm1 = GPIO.PWM(23, 1000)
+    pwm1.start(0)
+
+    # pwm2 = GPIO.PWM(24, 1000)
+    pwm2.start(0)
 
 def turn_off_resistor():
     global resistor_pin
-    wiringpi.softPwmWrite(resistor_pin, 0)
+    pwm1.ChangeDutyCycle(0)
 
 def turn_off_ventoinha():
     global ventoinha_pin
-    wiringpi.softPwmWrite(ventoinha_pin, 0)
+    pwm2.ChangeDutyCycle(0)
 
 def clean_peripherals_communication():
     ...
+
+def activate_resistor(sinal_controle):
+    global resistor_pin, ventoinha_pin
+
+    value = int(abs(sinal_controle))
+
+    print('ligando resistor')
+
+    pwm1.ChangeDutyCycle(value)
+    turn_off_ventoinha()
+
+def activate_ventoinha(sinal_controle):
+    global resistor_pin, ventoinha_pin
+
+    value = int(abs(sinal_controle))
+
+    if(sinal_controle < 0 and sinal_controle > -40): #se o sinal de controle estiver entre 0 e -40, joga pra 40%
+        pwm2.ChangeDutyCycle(40)
+        turn_off_resistor()
+    else:
+        pwm2.ChangeDutyCycle(value)
+        turn_off_resistor()
