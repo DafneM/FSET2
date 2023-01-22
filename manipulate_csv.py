@@ -1,6 +1,7 @@
 import csv
 import datetime
 from now import *
+import os
 
 def write_csv():
     date_time = datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S")
@@ -12,11 +13,15 @@ def write_csv():
         writer.writerows(data)
 
 def write_csv2():
-    data = [['Name', 'Age'],
-        ['Bob', 25],
-        ['Alice', 22],
-        ['Charlie', 27]]
+    # data = [['Name', 'Age'],
+    #     ['Bob', 25],
+    #     ['Alice', 22],
+    #     ['Charlie', 27]]
 
-    with open('states.csv', 'w') as file:
-        for row in data:
-            file.write(','.join(str(i) for i in row) + '\n')
+    # with open('states.csv', 'w') as file:
+    #     for row in data:
+    #         file.write(','.join(str(i) for i in row) + '\n')
+
+    arquivo = open("states.csv", "a")
+    arquivo.write("ola,mundo")
+    arquivo.close()

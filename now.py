@@ -10,7 +10,8 @@ states = {
     'activation_value': 0,
     'kp': 30.0,
     'ki': 0.2,
-    'kd': 400.0
+    'kd': 400.0,
+    'temp_mode': 0
 }
 
 curva_reflow_time_temp = {}

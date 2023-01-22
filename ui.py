@@ -1,13 +1,18 @@
+from now import *
+
 def user_interface():
 
-
-    choice = float(input("O que vocẽ deseja alterar/\n1-Temperatura de referencia\n2-Constantes PID\n"))
+    choice = int(input("Seja bem vindo!\nO que você deseja fazer?/\n1-Alterar constantes PID\n2-Controlar por dashboard\n"))
 
     if(choice == 1):
-        reference_temp = float(input("Defina a temperatura de referência desejada: "))
-    
-    elif(choice == 2):
         print("Defina os parâmetros desejados:")
         Kp = float(input("Kp: "))
         Ki = float(input("Ki: "))
         Kd = float(input("Kd: "))
+
+        states['kp'] = Kp
+        states['ki'] = Ki
+        states['kd'] = Kd
+
+    elif(choice == 2):
+        print('Vamos começar!')

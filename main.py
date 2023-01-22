@@ -10,8 +10,8 @@ import sys
 from threading import Thread 
 import os
 import csv
+from ui import *
 
-thread = None
 run_thread = True
 tempo = 0
 
@@ -55,19 +55,16 @@ def main():
     init_gpio()
     init_system()
 
-    #user_interface()
+    user_interface()
+
+    thread = Thread(target = threaded_function, args = ()) 
+    thread.start() 
 
     # Lendo dados da uart a cada 500ms
     while(1):
-        global thread, tempo
+        global tempo
 
         response = read_commands() #mandando '0x23' '0xC3'
-        
-        thread = Thread(target = threaded_function, args = ()) 
-        thread.start() 
-
-        # thread_temp_control = Thread(target = temp_control, args = ()) 
-        # thread_temp_control.start()
 
         # LIGA FORNO
         if(response == '0xa1'): 
@@ -117,23 +114,22 @@ def main():
             temp_mode = receive_data()
         
         # CONTROLE DE TEMPERATURA
-
         if(states['system_state'] == 1 and states['heating_state'] == 1):
             #le temperatura externa
-            # calculate_external_temp() 
-            # external = states['external_temp']
-            # transmit_data('0x16', '0xD6') 
-            # time.sleep(250/1000)
-            # external_temp = receive_data()
-
-            #le temperatura de referencia
-            transmit_data('0x23', '0xC2') 
+            calculate_external_temp() 
+            external = states['external_temp']
+            transmit_data('0x16', '0xD6') 
             time.sleep(250/1000)
-            uart_temp = receive_data()
+            external_temp = receive_data()
 
             if(states['curva_mode'] == 0):
+                print('entrei no 2')
+                #le temperatura de referencia
+                transmit_data('0x23', '0xC2') 
+                time.sleep(250/1000)
+                uart_temp = receive_data()
+
                 if(uart_temp != -1 and type(uart_temp) == float and uart_temp != states['internal_temp']):
-                    print('entrei aqui no menos 1')
                     states['reference_temp'] = uart_temp
                     x = states['reference_temp']
                     pid_atualiza_referencia(states['reference_temp'])
@@ -160,25 +156,20 @@ def main():
             internal_temp = receive_data()
             if(internal_temp != -1 and type(internal_temp) == float and internal_temp != states['reference_temp']):
                 states['internal_temp'] = internal_temp
-                print(f'INTERNAL {internal_temp}')
 
             pid_configura_constantes(states['kp'], states['ki'], states['kd'])
             states['control_signal'] = pid_controle(states['internal_temp'])
 
             if(states['control_signal'] < 0):
-                print('para ativar ventoinha')
                 activate_ventoinha(states['control_signal'])
 
             elif(states['control_signal'] > 0):
-                print('para ativar resistor')
                 activate_resistor(states['control_signal'])
 
             transmit_data('0x16', '0xD1')
 
         if(states['system_state'] == 1):
             tempo+=1
-        
-        print(tempo)
-                
+
 if __name__ == '__main__':
     main()

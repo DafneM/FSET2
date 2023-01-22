@@ -45,10 +45,11 @@ def transmit_data(code, subcode):
         data_control_signal = bytes([int('6', 16), int('2', 16), int('4', 16), int('3', 16)])
         data = bytes(subcode + data_control_signal + bytes_representation)
     elif (code_hexa_str == '0x16' and subcode_hexa_str == '0xD2'): #envia sinal de referencia
+        x = states['reference_temp']
+        print(f'aq {x}')
         float_reference_temp = struct.pack('f', states['reference_temp'])
         data_control_signal = bytes([int('6', 16), int('2', 16), int('4', 16), int('3', 16)])
         data = bytes(subcode + data_control_signal + float_reference_temp)
-    
     else:
         data = bytes(subcode + matricula)
 
@@ -58,23 +59,17 @@ def transmit_data(code, subcode):
     tx_buffer = bytes(destination_address + function_code + data + crc)
 
     if uart0_filestream != -1:
-        print("Escrevendo caracteres na UART ...")
         count = os.write(uart0_filestream, tx_buffer)
         if count < 0:
             print("UART TX error")
-        else:
-            print("Escrito.")
-
 
 def receive_data():
     if uart0_filestream != -1:
         rx_buffer = os.read(uart0_filestream, 255)
         rx_length = len(rx_buffer)
         if rx_length < 0:
-            print("Erro na leitura.")
             return -1
         elif rx_length == 0:
-            print("Nenhum dado disponível.")
             return -1
         else:
             buffer_nine = rx_buffer[:9]

@@ -146,8 +146,6 @@ def activate_resistor(sinal_controle):
 
     value = int(abs(sinal_controle))
 
-    print('ligando resistor')
-
     pwm1.ChangeDutyCycle(value)
     turn_off_ventoinha()
 
