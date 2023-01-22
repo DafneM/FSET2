@@ -28,9 +28,7 @@ def pid_controle(saida_medida):
     global last_time
     global erro_total, erro_anterior
     global sinal_de_controle_MAX, sinal_de_controle_MIN
-
-    print(Kp, Ki, Kd)
-
+    
     erro = referencia - saida_medida
     erro_total += erro
 

@@ -13,11 +13,9 @@ def calculate_external_temp():
     params = bme280.load_calibration_params(bus,  BME280_I2C_ADDR)
 
     try:
-        # while(1):
         data = bme280.sample(bus,  BME280_I2C_ADDR, params)
         states['external_temp'] = float(data.temperature)
         a = states['external_temp']
-        # time.sleep(1)
     
     except KeyboardInterrupt:
         print('finalizando...')

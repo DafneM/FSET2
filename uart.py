@@ -46,7 +46,6 @@ def transmit_data(code, subcode):
         data = bytes(subcode + data_control_signal + bytes_representation)
     elif (code_hexa_str == '0x16' and subcode_hexa_str == '0xD2'): #envia sinal de referencia
         x = states['reference_temp']
-        print(f'aq {x}')
         float_reference_temp = struct.pack('f', states['reference_temp'])
         data_control_signal = bytes([int('6', 16), int('2', 16), int('4', 16), int('3', 16)])
         data = bytes(subcode + data_control_signal + float_reference_temp)
@@ -109,6 +108,10 @@ def read_commands():
     response = receive_data()
 
     return response
+
+def close_uart():
+    global uart0_filestream
+    os.close(uart0_filestream)
 
 def config_uart():
     global uart0_filestream
