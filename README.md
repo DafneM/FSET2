@@ -52,7 +52,7 @@ Na dashboard o usuário pode
 - Parar aquecimento
 - Trocar modo de temperatura
 
-![Dashboard](assets/terminal.png)
+![Dashboard](assets/dashboard.png)
 
 ## Gráficos
 
