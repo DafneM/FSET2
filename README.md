@@ -1,10 +1,16 @@
 # Trabalho 2 - Fundamentos de Sistemas Embarcados
 
-[trabalho 2](https://gitlab.com/fse_fga/trabalhos-2022_2/trabalho-2-2022-2) que consiste em um software de sistema embarcado que controla a temperatura de um forno utilizando 2 atuadores: um resistor e uma ventoinha.
+Nome: Dafne Moretti Moreira
+
+Matrícula: 190026243
+
+Neste repositório consta o código do [trabalho 2](https://gitlab.com/fse_fga/trabalhos-2022_2/trabalho-2-2022-2) que consiste em um software de sistema embarcado que controla a temperatura de um forno utilizando dois atuadores: um resistor e uma ventoinha.
 
 ## Dependências
 
-Para rodar o projeto, é necessário instalar as dependências abaixo.
+Para rodar o projeto, você precisa ter o **python** instalado na sua máquina
+
+ALém disso, é necessária a instalação das dependências abaixo.
 
 ```bash
 pip install RPi.GPIO
@@ -30,7 +36,13 @@ pip install smbus2
 
 ## Rodar
 
-Após a instalação da dependência, basta rodar o comando abaixo no terminal.
+Após a instalação das dependências, basta entrar na pasta src
+
+```bash
+cd src
+```
+
+E por fim, rodar o comando abaixo:
 
 ```bash
 python main.py
